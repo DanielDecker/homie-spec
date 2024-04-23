@@ -19,6 +19,7 @@ EXAMPLE_DEVICE_W_NODES = Device(id="mock", name="Mock Device",
 
 @given(devices())
 @example(device=EXAMPLE_DEVICE)
+@example(device=EXAMPLE_DEVICE_W_NODES)
 def test_device_messages(device: Device) -> None:
     """
     Assert multiple properties given a device.
@@ -53,7 +54,8 @@ def test_device_messages(device: Device) -> None:
 
         if device.nodes:
             for node in device.nodes:
-                assert msg.exists(topic_parts=[prefix, "$nodes"], matches_substring=node)
+                # nodes get return in lower case, so we need to compare with node.lower()
+                assert msg.exists(topic_parts=[prefix, "$nodes"], matches_substring=node.lower())
         else:
             assert msg.exists(topic_parts=[prefix, "$nodes"], exact_payload="")
 
